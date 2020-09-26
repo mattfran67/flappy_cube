@@ -1,14 +1,18 @@
 function sceneOpening() {
   curScene = 1;
 
-  // Reseta os pontos
+  // Reseta alguns parametros
   player.points = 0;
+  player.y = posY;
+  pos = posY;
+  a.time = 0;
+
 
   // Cria e reinicia os canos
   pipes.splice(0, pipes.length)
   for (let i = 1; i <= 100; i++) {
     height = random(50, (contx.canvH / 2) + 30);
-    
+
     pipes.push({
       up: new Pipe(i * 200, 0, 51, height),
       down: new Pipe(i * 200, height + gap, 51, (contx.canvH - height) - gap)
@@ -79,36 +83,31 @@ function game() {
 
   // Fundo
   contx.ctx.drawImage(imgBgrd, 0, 0, contx.canvW, contx.canvH);
-  
+
   id = requestAnimationFrame(game);
-  
+
   // Desenha o jogador
   player.draw();
-  
+
   // Desenha os canos
   for (let i = 0; i < pipes.length; i++) {
     pipes[i].up.draw();
     pipes[i].down.draw();
     pipes[i].up.x -= 1;
     pipes[i].down.x -= 1;
-    
+
     // Aumenta a pontuação
     if ((pipes[i].up.x + pipes[i].up.w) < player.x) {
       player.points = i + 1;
     }
-    
-    if (player.collision(pipes[i].up) || player.collision(pipes[i].down)) {
-      // Reseta alguns parametros
-      player.y = posY;
-      pos = posY;
-      a.time = 0;
 
+    if (player.collision(pipes[i].up) || player.collision(pipes[i].down)) {
       cancelAnimationFrame(id);
       gameOver();
       return;
     }
   }
-  
+
   // Desenha os pontos
   contx.ctx.fillStyle = "#555";
   contx.ctx.font = "20px Arial";
@@ -119,7 +118,7 @@ function game() {
     sceneEnd();
     return;
   }
-  
+
   // Pula ou cai se tecla for pressionada
   if (keyIsPressed) {
     player.jump();
